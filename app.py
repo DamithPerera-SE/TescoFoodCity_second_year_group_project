@@ -6,12 +6,12 @@ from flask import send_file
 import random
 import string
 import secrets
+import requests
 from datetime import datetime, timedelta
 from flask import Flask, jsonify, redirect, url_for, session, request, render_template, flash
 
 import mysql.connector
 
-from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, session, render_template, request, jsonify, redirect, url_for
@@ -54,14 +54,7 @@ def get_db_connection():
     connection_timeout=30
     )
 
-# ... then your routes ...
 
-# -----------------------------
-# SendGrid client
-# -----------------------------
-SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
-SG = SendGridAPIClient(SENDGRID_API_KEY)
-SENDER_EMAIL = "your-email@example.com"
 
 # -----------------------------
 # Helper Functions
@@ -448,139 +441,146 @@ def add_review():
 @app.route('/cart')
 def cart():
     return render_template('cart.html')
-    
+
+
 # --- CONFIGURATION ---
-SENDGRID_API_KEY = 'YOUR_SENDGRID_API_KEY'  # Replace this
-SENDER_EMAIL = 'your_verified_sender@example.com'  # Replace this
+# 1. Your Brevo API Key
+# =========================================================
+# ⚙️ CONFIGURATION (FILL THESE IN CAREFULLY)
+# =========================================================
 
-# ---------------------------------------------------------
-# 1. HELPER FUNCTION: Send Email
-# ---------------------------------------------------------
+# 1. Your Brevo API Key
+BREVO_API_KEY = "xsmtpsib-bf8057433a4207fe9e30adca4e55a325ff618ea6d909703b93642879f37e4429-NYSBVvfUWAl4zAns"
+
+# 2. SENDER EMAIL (MUST be your verified GMAIL, NOT OUSL)
+SENDER_EMAIL = "damithperera747@gmail.com"  # <--- CHANGE THIS
+
+# 3. SENDER NAME
+SENDER_NAME = "Tesco Food City"
+
+# =========================================================
+# 📧 FUNCTION: Send Email via Brevo
+# =========================================================
 def send_verification_email(to_email, code):
-    message = Mail(
-        from_email=SENDER_EMAIL,
-        to_emails=to_email,
-        subject='Your Verification Code',
-        html_content=f'<h3>Welcome!TescofoodCity</h3><p>Your verification code is: <strong>{code}</strong></p>'
-    )
-    try:
-        sg = SendGridAPIClient(SENDGRID_API_KEY)
-        response = sg.send(message)
-        print(f"Email sent! Status Code: {response.status_code}")
-    except Exception as e:
-        print(f"Error sending email: {e}")
+    url = "https://api.brevo.com/v3/smtp/email"
+    
+    headers = {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY,
+        "content-type": "application/json"
+    }
+    
+    payload = {
+        "sender": {"name": SENDER_NAME, "email": SENDER_EMAIL},
+        "to": [{"email": to_email}],
+        "subject": "Your Verification Code",
+        "htmlContent": f"<h3>Welcome!</h3><p>Your verification code is: <strong>{code}</strong></p>"
+    }
 
-# ---------------------------------------------------------
-# 2. ROUTE: Register (Triggering the Verification)
-# ---------------------------------------------------------
+    try:
+        print(f"DEBUG: Connecting to Brevo to send email to {to_email}...")
+        response = requests.post(url, json=payload, headers=headers)
+
+        if response.status_code == 201:
+            print("✅ EMAIL SENT SUCCESSFULLY!")
+            return True
+        else:
+            print(f"❌ EMAIL FAILED. Status: {response.status_code}")
+            print(f"❌ Error Message: {response.text}")
+            
+            # SAFETY NET: Print code to terminal so you can still verify
+            print("\n" + "="*40)
+            print(f"⚠️ EMERGENCY CODE DISPLAY: {code}")
+            print("="*40 + "\n")
+            return False
+
+
+    except Exception as e:
+        print(f"❌ CRITICAL ERROR: {e}")
+        return False
+
+# =========================================================
+# 🗄️ DATABASE CONNECTION
+# =========================================================
+def get_db_connection():
+    return mysql.connector.connect(
+        host="localhost", user="root", password="", database="digital_wallet_app"
+    )
+
+# =========================================================
+# 📝 ROUTE: REGISTER
+# =========================================================
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
-        password = generate_password_hash(request.form['password']) # Ensure you import this
+        password = generate_password_hash(request.form['password'])
         role = request.form.get('role', 'customer')
 
         conn = get_db_connection()
         cur = conn.cursor(dictionary=True)
 
         try:
-            # A. Check if user exists
             cur.execute("SELECT * FROM users WHERE email = %s", (email,))
             if cur.fetchone():
                 flash("Email already registered.", "danger")
                 return redirect(url_for('register'))
 
-            # B. Insert User (Default is_verified = 0 for customers)
-            # If Admin, auto-verify (1). If Customer, require verification (0).
             is_verified = 1 if role == 'admin' else 0
-            
-            cur.execute(
-                "INSERT INTO users (username, email, password, role, is_verified) VALUES (%s, %s, %s, %s, %s)",
-                (username, email, password, role, is_verified)
-            )
-            # Get the ID of the user we just created
+            cur.execute("INSERT INTO users (username, email, password, role, is_verified) VALUES (%s, %s, %s, %s, %s)", 
+                        (username, email, password, role, is_verified))
             user_id = cur.lastrowid
             conn.commit()
 
-            # C. IF CUSTOMER: Generate Code & Send Email
             if role == 'customer':
-                # Generate 6-digit code
                 code = str(random.randint(100000, 999999))
-                
-                # Save code to Database
                 cur.execute("INSERT INTO verification_codes (user_id, code) VALUES (%s, %s)", (user_id, code))
                 conn.commit()
                 
-                # Send the Email
+                # Send Email
                 send_verification_email(email, code)
                 
-                # Store email in session so the next page knows who we are verifying
                 session['email_to_verify'] = email
-                
-                flash("Registration successful! Please check your email for the code.", "info")
+                flash("Registration successful! Check your email (or Spam).", "info")
                 return redirect(url_for('verify_code'))
 
-            # If Admin, skip verification
-            flash("Registration successful! Please login.", "success")
             return redirect(url_for('login'))
 
         except Exception as e:
-            print(e)
-            flash("An error occurred during registration.", "danger")
+            print(f"Database Error: {e}")
         finally:
             cur.close()
             conn.close()
 
     return render_template("register.html")
 
-# ---------------------------------------------------------
-# 3. ROUTE: Verify Code (Checking the Input)
-# ---------------------------------------------------------
+# =========================================================
+# ✅ ROUTE: VERIFY
+# =========================================================
 @app.route('/verify', methods=['GET', 'POST'])
 def verify_code():
-    # If someone tries to access this page without registering/logging in
-    if 'email_to_verify' not in session:
-        flash("Session expired or invalid access.", "danger")
-        return redirect(url_for('register'))
-
     if request.method == 'POST':
         entered_code = request.form['code']
-        email = session['email_to_verify']
+        email = session.get('email_to_verify')
 
         conn = get_db_connection()
         cur = conn.cursor(dictionary=True)
-
-        # A. Find the User ID based on the email in session
         cur.execute("SELECT id FROM users WHERE email = %s", (email,))
         user = cur.fetchone()
 
         if user:
-            user_id = user['id']
-            
-            # B. Check if the code matches the database record
-            cur.execute("SELECT * FROM verification_codes WHERE user_id = %s AND code = %s", (user_id, entered_code))
-            record = cur.fetchone()
-
-            if record:
-                # C. SUCCESS: Mark user as verified
-                cur.execute("UPDATE users SET is_verified = 1 WHERE id = %s", (user_id,))
-                
-                # Cleanup: Remove the used code
-                cur.execute("DELETE FROM verification_codes WHERE user_id = %s", (user_id,))
+            cur.execute("SELECT * FROM verification_codes WHERE user_id = %s AND code = %s", (user['id'], entered_code))
+            if cur.fetchone():
+                cur.execute("UPDATE users SET is_verified = 1 WHERE id = %s", (user['id'],))
+                cur.execute("DELETE FROM verification_codes WHERE user_id = %s", (user['id'],))
                 conn.commit()
-
-                flash("Email verified successfully! You can now login.", "success")
-                session.pop('email_to_verify', None) # Clear the temp session
+                flash("Success! Login now.", "success")
                 return redirect(url_for('login'))
             else:
-                flash("Invalid code. Please try again.", "danger")
-        else:
-            flash("User not found.", "danger")
-        
+                flash("Wrong Code", "danger")
         cur.close()
         conn.close()
-
     return render_template("verify.html")
 
 
