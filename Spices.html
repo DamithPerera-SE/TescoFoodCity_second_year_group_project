@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Spices</title>
+
+<style>
+body { font-family: Arial, sans-serif; margin:0; padding:0; background:#d9ece0; }
+h1 { text-align:center; margin:20px 0; }
+
+.product-grid {
+display:grid;
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+gap:15px;
+padding:20px;
+}
+
+.product-card {
+background:#fff;
+border:1px solid #7cbd14;
+border-radius:8px;
+padding:10px;
+text-align:center;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+.product-card img {
+width:100%;
+height:150px;
+object-fit:cover;
+border-radius:5px;
+}
+
+.product-card:hover {
+box-shadow:0 4px 10px rgba(3,97,19,0.2);
+transform:translateY(-5px);
+transition: all 0.3s ease;
+}
+
+.product-name { margin-top:10px; font-weight:bold; }
+.product-price { margin-top:5px; color:#0f5132; font-weight:bold; }
+
+.product-link{
+text-decoration:none;
+color:inherit;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Spices</h1>
+
+<div class="product-grid">
+
+<a href="{{ url_for('product_detail', product_id=201) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/spices/spice1.jpg') }}">
+<div class="product-name">Salt 500g</div>
+<div class="product-price">Rs.120.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=202) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/spices/spice2.jpg') }}">
+<div class="product-name">Sugar 1kg</div>
+<div class="product-price">Rs.280.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=203) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/spices/spice3.jpg') }}">
+<div class="product-name">Black Pepper 100g</div>
+<div class="product-price">Rs.450.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=204) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/spices/spice4.jpg') }}">
+<div class="product-name">Curry Powder</div>
+<div class="product-price">Rs.350.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=205) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/spices/spice5.jpg') }}">
+<div class="product-name">Turmeric Powder</div>
+<div class="product-price">Rs.300.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=206) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/spices/spice6.jpg') }}">
+<div class="product-name">Chili Powder</div>
+<div class="product-price">Rs.420.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=207) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/spices/spice7.jpg') }}">
+<div class="product-name">Cumin Seeds</div>
+<div class="product-price">Rs.390.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=208) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/spices/spice8.jpg') }}">
+<div class="product-name">Coriander Powder</div>
+<div class="product-price">Rs.320.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=209) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/spices/spice9.jpg') }}">
+<div class="product-name">Cinnamon Sticks</div>
+<div class="product-price">Rs.480.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=210) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/spices/spice10.jpg') }}">
+<div class="product-name">Cloves 50g</div>
+<div class="product-price">Rs.500.00</div>
+</div>
+</a>
+
+<!-- 11–20 -->
+
+<a href="{{ url_for('product_detail', product_id=211) }}" class="product-link"><div class="product-card"><img src="{{ url_for('static', filename='images/product/spices/spice11.jpg') }}"><div class="product-name">Cardamom</div><div class="product-price">Rs.950.00</div></div></a>
+
+<a href="{{ url_for('product_detail', product_id=212) }}" class="product-link"><div class="product-card"><img src="{{ url_for('static', filename='images/product/spices/spice12.jpg') }}"><div class="product-name">Garlic Powder</div><div class="product-price">Rs.360.00</div></div></a>
+
+<a href="{{ url_for('product_detail', product_id=213) }}" class="product-link"><div class="product-card"><img src="{{ url_for('static', filename='images/product/spices/spice13.jpg') }}"><div class="product-name">Ginger Powder</div><div class="product-price">Rs.340.00</div></div></a>
+
+<a href="{{ url_for('product_detail', product_id=214) }}" class="product-link"><div class="product-card"><img src="{{ url_for('static', filename='images/product/spices/spice14.jpg') }}"><div class="product-name">Soy Sauce</div><div class="product-price">Rs.420.00</div></div></a>
+
+<a href="{{ url_for('product_detail', product_id=215) }}" class="product-link"><div class="product-card"><img src="{{ url_for('static', filename='images/product/spices/spice15.jpg') }}"><div class="product-name">Vinegar</div><div class="product-price">Rs.250.00</div></div></a>
+
+<a href="{{ url_for('product_detail', product_id=216) }}" class="product-link"><div class="product-card"><img src="{{ url_for('static', filename='images/product/spices/spice16.jpg') }}"><div class="product-name">Olive Oil</div><div class="product-price">Rs.1650.00</div></div></a>
+
+<a href="{{ url_for('product_detail', product_id=217) }}" class="product-link"><div class="product-card"><img src="{{ url_for('static', filename='images/product/spices/spice17.jpg') }}"><div class="product-name">Mustard Seeds</div><div class="product-price">Rs.240.00</div></div></a>
+
+<a href="{{ url_for('product_detail', product_id=218) }}" class="product-link"><div class="product-card"><img src="{{ url_for('static', filename='images/product/spices/spice18.jpg') }}"><div class="product-name">Fenugreek Seeds</div><div class="product-price">Rs.260.00</div></div></a>
+
+<a href="{{ url_for('product_detail', product_id=219) }}" class="product-link"><div class="product-card"><img src="{{ url_for('static', filename='images/product/spices/spice19.jpg') }}"><div class="product-name">Baking Powder</div><div class="product-price">Rs.200.00</div></div></a>
+
+<a href="{{ url_for('product_detail', product_id=220) }}" class="product-link"><div class="product-card"><img src="{{ url_for('static', filename='images/product/spices/spice20.jpg') }}"><div class="product-name">Vanilla Essence</div><div class="product-price">Rs.300.00</div></div></a>
+
+</div>
+</body>
+</html>

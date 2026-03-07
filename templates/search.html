@@ -616,47 +616,185 @@ My Account
 
    <section class="categories">
     <h2>Categories</h2>
+
     <div class="category-list">
+
+        <!-- Daily Deals -->
         <a href="{{ url_for('daily_deals') }}" class="category-link">
             <div class="cat-item">
+              
                 <img src="{{ url_for('static', filename='images/categories/dailydeals.jpeg') }}" alt="Daily Deals">
-                 </a>
-
+               </a>
                 <p>Daily Deals</p>
             </div>
-    
+        
 
-    <a href="{{ url_for('dairy') }}" class="category-link">
+        <!-- Dairy -->
+        <a href="{{ url_for('dairy') }}" class="category-link">
             <div class="cat-item">
+               
                 <img src="{{ url_for('static', filename='images/categories/dairy.jpg') }}" alt="Dairy">
-                 </a>
-
+               </a>
                 <p>Dairy</p>
-            </div>
-      
-
-   <a href="{{ url_for('frozen') }}" class="category-link">
-            <div class="cat-item">
-                <img src="{{ url_for('static', filename='images/categories/frozen.jpeg') }}" alt="Frozen">
-                 </a>
-
-                        <p>Frozen</p>
-            
+                
             </div>
     
 
-       <a href="{{ url_for('grocery') }}" class="category-link">
+        <!-- Frozen -->
+        <a href="{{ url_for('frozen') }}" class="category-link">
+            <div class="cat-item">
+                
+                <img src="{{ url_for('static', filename='images/categories/frozen.jpeg') }}" alt="Frozen">
+                </a>
+                <p>Frozen</p>
+                
+
+
+            </div>
+        
+
+        <!-- Grocery -->
+        <a href="{{ url_for('grocery') }}" class="category-link">
             <div class="cat-item">
                 <img src="{{ url_for('static', filename='images/categories/grocery.jpg') }}" alt="Grocery">
-                 </a>
-   <p>Grocery</p>
+               </a>
+                <p>Grocery</p>
             
             </div>
+        
 
+        <!-- Snacks -->
+        <a href="{{ url_for('snacks') }}" class="category-link">
+            <div class="cat-item">
+                <img src="{{ url_for('static', filename='images/categories/snacks.jpg') }}" alt="Snacks">
+               </a>
+                <p>Snacks</p>
+            
+            </div>
+        
 
+        <!-- Beverages -->
+        <a href="{{ url_for('beverages') }}" class="category-link">
+            <div class="cat-item">
+                <img src="{{ url_for('static', filename='images/categories/beverages.jpg') }}" alt="Beverages">
+               </a>
+                <p>Beverages</p>
+            </div>
+        </a>
+
+        <!-- Spices & Cooking -->
+        <a href="{{ url_for('spices') }}" class="category-link">
+            <div class="cat-item">
+               
+                <img src="{{ url_for('static', filename='images/categories/spices.jpg') }}" alt="Spices">
+               </a>
+                <p>Spices & Cooking</p>
+            </div>
+        
+
+  
+    
+
+        <!-- Personal Care -->
+        <a href="{{ url_for('personalcare') }}" class="category-link">
+            <div class="cat-item">
+                <img src="{{ url_for('static', filename='images/categories/personalcare.jpg') }}" alt="Personal Care">
+               </a>
+                <p>Personal Care</p>
+            </div>
+        
 
     </div>
 </section>
+
+
+<!-- Ads Carousel -->
+<div style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px;">
+  <div style="flex: 0 0 auto; width: 250px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+     <img src="{{ url_for('static', filename='images/B_ad/ba.png') }}"  alt="Banner 1" style="width: 100%; height: auto;">
+  </div>
+  <div style="flex: 0 0 auto; width: 250px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+   <img src="{{ url_for('static', filename='images/B_ad/b1.png') }}"  alt="Banner 2" style="width: 100%; height: auto;">
+  </div>
+  <div style="flex: 0 0 auto; width: 250px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+    <img src="{{ url_for('static', filename='images/B_ad/b2.png') }}"  alt="Banner 3" style="width: 100%; height: auto;">
+  </div>
+  <div style="flex: 0 0 auto; width: 250px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+    <img src="{{ url_for('static', filename='images/B_ad/b3.png') }}"  alt="Banner 4" style="width: 100%; height: auto;">
+  </div>
+  <div style="flex: 0 0 auto; width: 250px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+   <img src="{{ url_for('static', filename='images/B_ad/b4.png') }}" alt="Banner 4" style="width: 100%; height: auto;">
+  </div>
+  <div style="flex: 0 0 auto; width: 250px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+   <img src="{{ url_for('static', filename='images/B_ad/b5.png') }}" alt="Banner 4" style="width: 100%; height: auto;">
+  </div>
+  <div style="flex: 0 0 auto; width: 250px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+   <img src="{{ url_for('static', filename='images/B_ad/b6.png') }}" alt="Banner 4" style="width: 100%; height: auto;">
+  </div>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <section class="products">
     <h2>Popular Products</h2>
@@ -894,6 +1032,12 @@ My Account
         <div class="product-price">Rs.220.00</div>
     </div>
 
+
+
+
+
+
+    
 
 <a href="{{ url_for('product_detail', product_id=92) }}" class="product-link">
     <div class="product-card">

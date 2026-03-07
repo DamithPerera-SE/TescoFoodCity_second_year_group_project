@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Personal Care</title>
+<style>
+body { font-family: Arial, sans-serif; margin:0; padding:0; background:#d9ece0; }
+h1 { text-align:center; margin:20px 0; }
+
+.product-grid {
+display:grid;
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+gap:15px;
+padding:20px;
+}
+
+.product-card {
+background:#fff;
+border:1px solid #7cbd14;
+border-radius:8px;
+padding:10px;
+text-align:center;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+.product-card img {
+width:100%;
+height:150px;
+object-fit:cover;
+border-radius:5px;
+}
+
+.product-card:hover {
+box-shadow:0 4px 10px rgba(3,97,19,0.2);
+transform:translateY(-5px);
+transition: all 0.3s ease;
+}
+
+.product-name { margin-top:10px; font-weight:bold; }
+.product-price { margin-top:5px; color:#0f5132; font-weight:bold; }
+
+.product-link{
+text-decoration:none;
+color:inherit;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Personal Care</h1>
+
+<div class="product-grid">
+
+<a href="{{ url_for('product_detail', product_id=301) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/personalcare/p1.jpg') }}">
+<div class="product-name">Lux Soap</div>
+<div class="product-price">Rs.180.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=302) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/personalcare/p2.jpg') }}">
+<div class="product-name">Lifebuoy Soap</div>
+<div class="product-price">Rs.170.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=303) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/personalcare/p3.jpg') }}">
+<div class="product-name">Sunsilk Shampoo</div>
+<div class="product-price">Rs.550.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=304) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/personalcare/p4.jpg') }}">
+<div class="product-name">Head & Shoulders Shampoo</div>
+<div class="product-price">Rs.850.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=305) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/personalcare/p5.jpg') }}">
+<div class="product-name">Colgate Toothpaste</div>
+<div class="product-price">Rs.320.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=306) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/personalcare/p6.jpg') }}">
+<div class="product-name">Signal Toothpaste</div>
+<div class="product-price">Rs.310.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=307) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/personalcare/p7.jpg') }}">
+<div class="product-name">Toothbrush Pack</div>
+<div class="product-price">Rs.250.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=308) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/personalcare/p8.jpg') }}">
+<div class="product-name">Body Wash</div>
+<div class="product-price">Rs.750.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=309) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/personalcare/p9.jpg') }}">
+<div class="product-name">Face Wash</div>
+<div class="product-price">Rs.680.00</div>
+</div>
+</a>
+
+<a href="{{ url_for('product_detail', product_id=310) }}" class="product-link">
+<div class="product-card">
+<img src="{{ url_for('static', filename='images/product/personalcare/p10.jpg') }}">
+<div class="product-name">Body Lotion</div>
+<div class="product-price">Rs.950.00</div>
+</div>
+</a>
+
+</div>
+</body>
+</html>

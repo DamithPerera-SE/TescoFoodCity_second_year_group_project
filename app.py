@@ -1059,6 +1059,30 @@ def report_issue():
 
 
 
+@app.route('/snacks')
+def snacks():
+    return render_template('snacks.html')
+
+@app.route('/beverages')
+def beverages():
+    return render_template('beverages.html')
+
+@app.route('/spices')
+def spices():
+    return render_template('spices.html')
+
+
+
+# Spices Page
+@app.route('/Spices')
+def Spices():
+    return render_template('Spices.html')
+
+
+# Personal Care Page
+@app.route('/Personalcare')
+def personalcare():
+    return render_template('Personalcare.html')
 
 
 
