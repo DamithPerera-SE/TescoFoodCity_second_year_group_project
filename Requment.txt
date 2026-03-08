@@ -36,5 +36,6 @@ pip install flask-login
 pip install reportlab
 if you using python python -m pip install reportlab
 python -m pip install requests
+python -m pip install Flask-Dance-google login
 
 
