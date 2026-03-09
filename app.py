@@ -15,20 +15,105 @@ import mysql.connector
 from sendgrid.helpers.mail import Mail
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, session, render_template, request, jsonify, redirect, url_for
+import smtplib
+from email.mime.text import MIMEText
+import smtplib
+import random
+from email.message import EmailMessage
+from werkzeug.security import generate_password_hash
+from flask import request, redirect, url_for, flash, session, render_template
+
+
+import os
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+from flask_dance.contrib.google import make_google_blueprint, google
+
+# -----------------------------
+# MySQL Connection
+# -----------------------------
+def get_db_connection():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="digital_wallet_app"
+    )
+
+
+# -----------------------------
+# Google OAuth Setup
+# -----------------------------
+
+
 
 app = Flask(__name__)
-app.secret_key = 'TescoFoodCitySecret123!@#'  # 🔑 needed for session
+app.secret_key = "TescoFoodCitySecret123!@#"
 
 
+# Google OAuth
+google_bp = make_google_blueprint(
+     client_id="214157873343-bfsj9kel2a2hvb99ri03l5rslghduulv.apps.googleusercontent.com",
+    client_secret="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",
+    scope=[
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+        "openid"
+    ],
+    redirect_to="google_login_success"
+)
+app.register_blueprint(google_bp, url_prefix="/login")
+
+
+
+
+# Google Login Success
 # -----------------------------
-# Google OAuth Config
-# -----------------------------
-CLIENT_ID = 'YOUR_CLIENT_ID'
-CLIENT_SECRET = 'YOUR_CLIENT_SECRET'
-REDIRECT_URI = "http://127.0.0.1:5000/callback"
-AUTHORIZATION_BASE_URL = "https://accounts.google.com/o/oauth2/v2/auth"
-TOKEN_URL = "https://oauth2.googleapis.com/token"
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # Allow HTTP for dev
+@app.route("/google_login_success")
+def google_login_success():
+
+    if not google.authorized:
+        return redirect(url_for("google.login"))
+
+    resp = google.get("/oauth2/v2/userinfo")
+
+    if not resp.ok:
+        flash("Google login failed.", "danger")
+        return redirect(url_for("login"))
+
+    user_info = resp.json()
+
+    email = user_info["email"]
+    name = user_info.get("name", email)
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
+    user = cursor.fetchone()
+
+    if not user:
+
+        cursor.execute(
+            "INSERT INTO users (username,email,password,role,is_verified) VALUES (%s,%s,%s,%s,%s)",
+            (name, email, "", "customer", 1)
+        )
+
+        conn.commit()
+
+        cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
+        user = cursor.fetchone()
+
+    session["user_id"] = user["id"]
+    session["username"] = user["username"]
+    session["role"] = user["role"]
+
+    flash("Google login successful", "success")
+
+    cursor.close()
+    conn.close()
+
+    return redirect(url_for("customer_dashboard"))
 
 # -----------------------------
 # Database connection
@@ -240,6 +325,53 @@ def cart_page():
 
 
 
+import smtplib
+from email.message import EmailMessage
+
+def send_verification_email(to_email, code):
+    sender_email = "s23010156@ousl.lk"
+    app_password = "njjfgvajdiiojlja"  # 16-character app password
+
+    html_content = f"""
+    <html>
+    <body style="font-family:Arial;background:#f5f5f5;padding:20px;">
+    <div style="max-width:500px;margin:auto;background:white;padding:30px;border-radius:10px;text-align:center;">
+        <!-- Logo -->
+        <div style="text-align:center;margin-bottom:20px;">
+            <img src="https://yourdomain.com/static/images/logo.jpg" alt="Tesco Food City" width="120">
+        </div>
+        <h2 style="color:#2e7d32;">Verify Your Email</h2>
+        <p>Hello,</p>
+        <p>Thank you for registering with <b>Tesco Food City</b>.</p>
+        <p>Your verification code is:</p>
+        <h1 style="letter-spacing:6px;color:#2e7d32;">{code}</h1>
+        <p>This code will expire in <b>2 minutes</b>.</p>
+        <p>If you did not request this, please ignore this email.</p>
+        <hr>
+        <p style="font-size:12px;color:gray;">Tesco Food City<br>Customer Support Team</p>
+    </div>
+    </body>
+    </html>
+    """
+
+    msg = EmailMessage()
+    msg.set_content(f"Your verification code is: {code}")  # fallback plain text
+    msg.add_alternative(html_content, subtype='html')
+    msg['Subject'] = "Email Verification - Tesco Food City"
+    msg['From'] = sender_email
+    msg['To'] = to_email
+
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(sender_email, app_password)
+            server.send_message(msg)
+
+        print(f"Verification email sent to {to_email}")
+        return True
+
+    except Exception as e:
+        print("EMAIL ERROR:", e)
+        return False
 
 
 
@@ -253,72 +385,160 @@ def cart_page():
 
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
-    # 1. Check if cart is empty
+    # 1️⃣ Check if cart is empty
     if 'cart' not in session or not session['cart']:
         return redirect(url_for('search_page'))
 
     cart = session['cart']
-    
-    # 2. Calculate Totals correctly
-    # multiply price * qty for every item
     cart_total = sum(float(item['price']) * int(item['qty']) for item in cart)
     delivery_fee = 350.0
     grand_total = cart_total + delivery_fee
 
-    # --- IF FORM SUBMITTED (POST) ---
+    # 2️⃣ Handle POST (form submission)
     if request.method == 'POST':
         customer_name = request.form.get('customer_name')
         email = request.form.get('user_email')
         phone = request.form.get('phone')
         address = request.form.get('address')
         payment_method = request.form.get('payment_method')
-        
-        # Get User ID (Default to 0 if guest/not logged in, to prevent crash)
+
+        # Get User ID if logged in
         user_id = session.get('user_id', 0)
 
-        try:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            
-            # --- 1. INSERT ORDER ---
-            # Using 'total_price' (matches your DB) and 'user_id'
-            cursor.execute('''
-                INSERT INTO orders (user_id, customer_name, email, phone, address, total_price, payment_method, status)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, 'Pending')
-            ''', (user_id, customer_name, email, phone, address, grand_total, payment_method))
-            
-            order_id = cursor.lastrowid
+        # Generate 6-digit verification code
+        verification_code = str(random.randint(100000, 999999))
+        
+        # Save order and code in session temporarily
+        session['pending_order'] = {
+            'user_id': user_id,
+            'customer_name': customer_name,
+            'email': email,
+            'phone': phone,
+            'address': address,
+            'payment_method': payment_method,
+            'cart': cart,
+            'total': grand_total,
+            'verification_code': verification_code
+        }
 
-            # --- 2. INSERT ORDER ITEMS ---
-            for item in cart:
-                # FIX: We use item['qty'] here, NOT 1
-                # Note: Ensure your table columns are 'item_name' and 'quantity'. 
-                # If your table uses 'product_name' or 'qty', change the words below.
-                cursor.execute('''
-                    INSERT INTO order_items (order_id, item_name, price, quantity)
-                    VALUES (%s, %s, %s, %s)
-                ''', (order_id, item['name'], item['price'], item['qty']))
 
-            conn.commit()
-            cursor.close()
-            conn.close()
 
-            # Clear session
-            session.pop('cart', None)
-            
-            # Show Success Page
-            return render_template('order_success.html', order_id=order_id, total=grand_total)
+        success = send_verification_email(email, verification_code)
+        if success:
+            flash("Verification code sent to your email. Please enter it to confirm your order.", "info")
+            return redirect(url_for('verify_order'))
+        else:
+            flash("Could not send verification email. Please try again.", "danger")
+            return redirect(url_for('checkout'))
 
-        except Exception as e:
-            print(f"Checkout Error: {e}") # Print error to console for debugging
-            return f"An error occurred: {e}"
-
-    # --- IF PAGE LOADING (GET) ---
+    # 3️⃣ Handle GET (load checkout page)
     user = session.get('user', {}) 
     if 'username' in session:
         user = {'username': session['username'], 'email': session.get('email', '')}
-        
+
     return render_template('checkout.html', cart=cart, total=cart_total, user=user)
+
+
+@app.route('/verify_order', methods=['GET', 'POST'])
+def verify_order():
+    pending_order = session.get('pending_order')
+    if not pending_order:
+        flash("No order to verify.", "danger")
+        return redirect(url_for('checkout'))
+
+    if request.method == 'POST':
+        entered_code = request.form['code'].strip()
+        if entered_code == pending_order['verification_code']:
+            # ✅ Insert order into DB
+            try:
+                conn = get_db_connection()
+                cursor = conn.cursor()
+
+                # Insert main order
+                cursor.execute('''
+                    INSERT INTO orders (user_id, customer_name, email, phone, address, total_price, payment_method, status)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, 'Pending')
+                ''', (
+                    pending_order['user_id'], pending_order['customer_name'], pending_order['email'],
+                    pending_order['phone'], pending_order['address'], pending_order['total'],
+                    pending_order['payment_method']
+                ))
+                order_id = cursor.lastrowid
+
+                # Insert order items
+                for item in pending_order['cart']:
+                    cursor.execute('''
+                        INSERT INTO order_items (order_id, item_name, price, quantity)
+                        VALUES (%s, %s, %s, %s)
+                    ''', (order_id, item['name'], item['price'], item['qty']))
+
+                conn.commit()
+                cursor.close()
+                conn.close()
+
+                # Clear session
+                session.pop('cart', None)
+                session.pop('pending_order', None)
+
+                flash("Order confirmed successfully!", "success")
+                return render_template('order_success.html', order_id=order_id, total=pending_order['total'])
+
+            except Exception as e:
+                print(f"Error confirming order: {e}")
+                flash("Failed to save your order. Please contact support.", "danger")
+                return redirect(url_for('checkout'))
+
+        else:
+            flash("Invalid verification code. Please try again.", "danger")
+
+    return render_template('verify_order.html', email=pending_order['email'])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @app.route('/about')
@@ -443,62 +663,7 @@ def cart():
     return render_template('cart.html')
 
 
-# --- CONFIGURATION ---
-# 1. Your Brevo API Key
-# =========================================================
-# ⚙️ CONFIGURATION (FILL THESE IN CAREFULLY)
-# =========================================================
-
-# 1. Your Brevo API Key
-BREVO_API_KEY = "xsmtpsib-bf8057433a4207fe9e30adca4e55a325ff618ea6d909703b93642879f37e4429-NYSBVvfUWAl4zAns"
-
-# 2. SENDER EMAIL (MUST be your verified GMAIL, NOT OUSL)
-SENDER_EMAIL = "damithperera747@gmail.com"  # <--- CHANGE THIS
-
-# 3. SENDER NAME
-SENDER_NAME = "Tesco Food City"
-
-# =========================================================
-# 📧 FUNCTION: Send Email via Brevo
-# =========================================================
-def send_verification_email(to_email, code):
-    url = "https://api.brevo.com/v3/smtp/email"
-    
-    headers = {
-        "accept": "application/json",
-        "api-key": BREVO_API_KEY,
-        "content-type": "application/json"
-    }
-    
-    payload = {
-        "sender": {"name": SENDER_NAME, "email": SENDER_EMAIL},
-        "to": [{"email": to_email}],
-        "subject": "Your Verification Code",
-        "htmlContent": f"<h3>Welcome!</h3><p>Your verification code is: <strong>{code}</strong></p>"
-    }
-
-    try:
-        print(f"DEBUG: Connecting to Brevo to send email to {to_email}...")
-        response = requests.post(url, json=payload, headers=headers)
-
-        if response.status_code == 201:
-            print("✅ EMAIL SENT SUCCESSFULLY!")
-            return True
-        else:
-            print(f"❌ EMAIL FAILED. Status: {response.status_code}")
-            print(f"❌ Error Message: {response.text}")
-            
-            # SAFETY NET: Print code to terminal so you can still verify
-            print("\n" + "="*40)
-            print(f"⚠️ EMERGENCY CODE DISPLAY: {code}")
-            print("="*40 + "\n")
-            return False
-
-
-    except Exception as e:
-        print(f"❌ CRITICAL ERROR: {e}")
-        return False
-
+#
 # =========================================================
 # 🗄️ DATABASE CONNECTION
 # =========================================================
@@ -510,78 +675,252 @@ def get_db_connection():
 # =========================================================
 # 📝 ROUTE: REGISTER
 # =========================================================
+import smtplib
+from email.message import EmailMessage
+
+def send_verification_email(to_email, code):
+    sender_email = "s23010156@ousl.lk"
+    app_password = "njjfgvajdiiojlja"  # Your 16-character Gmail App Password
+
+    # Create the HTML content for the email
+    html_content = f"""
+    <html>
+    <body style="font-family:Arial;background:#f5f5f5;padding:20px;">
+      <div style="max-width:500px;margin:auto;background:white;padding:30px;border-radius:10px;text-align:center;">
+       
+        <h2 style="color:#2e7d32;">Verify Your Email</h2>
+
+        <p>Hello,</p>
+        <p>Thank you for registering with <b>Tesco Food City</b>.</p>
+        <p>Your verification code is:</p>
+        <h1 style="letter-spacing:6px;color:#2e7d32;">{code}</h1>
+        <p>This code will expire in <b>2 minutes</b>.</p>
+        <p>If you did not request this, please ignore this email.</p>
+
+        <hr>
+        <p style="font-size:12px;color:gray;">
+          Tesco Food City<br>
+          Customer Support Team
+        </p>
+      </div>
+    </body>
+    </html>
+    """
+
+    # Create email message object
+    msg = EmailMessage()
+    msg['Subject'] = "Email Verification - Tesco Food City"
+    msg['From'] = sender_email
+    msg['To'] = to_email
+    msg.set_content(f"Your verification code is: {code}")  # Plain text fallback
+    msg.add_alternative(html_content, subtype='html')      # HTML content
+
+    try:
+        # Connect to Gmail SMTP server
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(sender_email, app_password)
+            server.send_message(msg)
+
+        print("Verification email sent successfully!")
+        return True
+
+    except Exception as e:
+        print("EMAIL ERROR:", e)
+        return False
+
+
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+
     if request.method == 'POST':
+
         username = request.form['username']
         email = request.form['email']
         password = generate_password_hash(request.form['password'])
         role = request.form.get('role', 'customer')
 
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(dictionary=True, buffered=True)
 
         try:
-            cur.execute("SELECT * FROM users WHERE email = %s", (email,))
+
+            # check email exists
+            cur.execute("SELECT * FROM users WHERE email=%s", (email,))
             if cur.fetchone():
                 flash("Email already registered.", "danger")
                 return redirect(url_for('register'))
 
-            is_verified = 1 if role == 'admin' else 0
-            cur.execute("INSERT INTO users (username, email, password, role, is_verified) VALUES (%s, %s, %s, %s, %s)", 
-                        (username, email, password, role, is_verified))
-            user_id = cur.lastrowid
-            conn.commit()
+            # insert user
+            is_verified = 1 if role == "admin" else 0
 
-            if role == 'customer':
+            cur.execute(
+                "INSERT INTO users (username,email,password,role,is_verified) VALUES (%s,%s,%s,%s,%s)",
+                (username, email, password, role, is_verified)
+            )
+
+            conn.commit()
+            user_id = cur.lastrowid
+
+            # customer verification
+            if role == "customer":
+
                 code = str(random.randint(100000, 999999))
-                cur.execute("INSERT INTO verification_codes (user_id, code) VALUES (%s, %s)", (user_id, code))
+
+                cur.execute(
+                    "INSERT INTO verification_codes (user_id,code) VALUES (%s,%s)",
+                    (user_id, code)
+                )
+
                 conn.commit()
-                
-                # Send Email
-                send_verification_email(email, code)
-                
+
+                # send email
+                if not send_verification_email(email, code):
+                    flash("Verification email could not be sent. Please try again.", "danger")
+                    return redirect(url_for('register'))
+
                 session['email_to_verify'] = email
-                flash("Registration successful! Check your email (or Spam).", "info")
+
+                flash("Registration successful! Check your email for verification code.", "success")
                 return redirect(url_for('verify_code'))
 
+            flash("Registration successful! You can login now.", "success")
             return redirect(url_for('login'))
 
         except Exception as e:
-            print(f"Database Error: {e}")
+
+            conn.rollback()
+            print("DATABASE ERROR:", e)
+            flash("Something went wrong.", "danger")
+
         finally:
             cur.close()
             conn.close()
 
     return render_template("register.html")
 
-# =========================================================
-# ✅ ROUTE: VERIFY
-# =========================================================
-@app.route('/verify', methods=['GET', 'POST'])
+
+
+@app.route('/verify_code', methods=['GET','POST'])
 def verify_code():
+
     if request.method == 'POST':
-        entered_code = request.form['code']
+
+        code_entered = request.form['code']
         email = session.get('email_to_verify')
+
+        if not email:
+            flash("No email to verify.", "danger")
+            return redirect(url_for('register'))
 
         conn = get_db_connection()
         cur = conn.cursor(dictionary=True)
-        cur.execute("SELECT id FROM users WHERE email = %s", (email,))
-        user = cur.fetchone()
 
-        if user:
-            cur.execute("SELECT * FROM verification_codes WHERE user_id = %s AND code = %s", (user['id'], entered_code))
-            if cur.fetchone():
-                cur.execute("UPDATE users SET is_verified = 1 WHERE id = %s", (user['id'],))
-                cur.execute("DELETE FROM verification_codes WHERE user_id = %s", (user['id'],))
-                conn.commit()
-                flash("Success! Login now.", "success")
-                return redirect(url_for('login'))
-            else:
-                flash("Wrong Code", "danger")
+        cur.execute("""
+        SELECT u.id, v.code
+        FROM users u
+        JOIN verification_codes v ON u.id=v.user_id
+        WHERE u.email=%s
+        """, (email,))
+
+        data = cur.fetchone()
+
+        if data and data['code'] == code_entered:
+
+            cur.execute(
+                "UPDATE users SET is_verified=1 WHERE id=%s",
+                (data['id'],)
+            )
+
+            conn.commit()
+
+            session.pop('email_to_verify', None)
+
+            flash("Email verified successfully! You can login now.", "success")
+
+            return redirect(url_for('login'))
+
+        else:
+            flash("Invalid verification code.", "danger")
+
         cur.close()
         conn.close()
-    return render_template("verify.html")
+
+    return render_template("verify_code.html")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @app.route('/category/daily-deals')
@@ -737,6 +1076,11 @@ def admin_dashboard():
     finally:
         cursor.close()
         conn.close()
+import smtplib
+from email.message import EmailMessage
+
+
+
 
 
 # 2. REVIEW ACTIONS
@@ -936,35 +1280,66 @@ def download_invoice(order_id):
 # -----------------------------
 # Manual Login
 # -----------------------------
-# Login
+# Login Route
+# -------------------------------
+# Database Connection Function
+# -------------------------------
+def get_db_connection():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="digital_wallet_app",
+        autocommit=True,
+        connection_timeout=30
+    )
+
+
+# -------------------------------
+# Login Route
+# -------------------------------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+
     if request.method == 'POST':
+
         username = request.form['username']
         password = request.form['password']
 
+        # connect database
+        db = get_db_connection()
+
+        # create cursor
+        cursor = db.cursor(dictionary=True, buffered=True)
+
+        # execute query
         cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
         user = cursor.fetchone()
 
+        cursor.close()
+        db.close()
+
         if user and check_password_hash(user['password'], password):
-            # Save session details
+
             session['user_id'] = user['id']
             session['username'] = user['username']
             session['role'] = user['role']
-            
+
             flash(f"Welcome {user['username']}!", "success")
 
-            # Clean the role string (remove spaces, make lowercase)
             role = user['role'].strip().lower()
 
-            if role == 'admin':
+            if role == "admin":
                 return redirect(url_for('admin_dashboard'))
-            elif role == 'delivery':
+
+            elif role == "delivery":
                 return redirect(url_for('delivery_dashboard'))
+
             else:
                 return redirect(url_for('customer_dashboard'))
+
         else:
-            flash("Invalid username or password.", "danger")
+            flash("Invalid username or password", "danger")
 
     return render_template("login.html")
 

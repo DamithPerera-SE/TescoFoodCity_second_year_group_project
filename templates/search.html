@@ -602,7 +602,7 @@ My Account
     <!-- Slider -->
     <section class="slider">
         <div class="slide active">
-            <h2>Fresh Groceries Delivered Fast</h2>
+          <h2>Fresh Groceries Delivered Fast</h2>
         </div>
         <div class="slide">
             <h2>Up to 50% OFF Daily Deals</h2>
@@ -611,7 +611,7 @@ My Account
             <h2>Secure Payments & Easy Checkout</h2>
         </div>
         <button class="prev">&#10094;</button>
-        <button class="next">&#10095;</button>
+        <buton class="next">&#10095;</button>
     </section>
 <!-- Professional Banner/Slider -->
 <section class="ads-carousel">
@@ -1564,7 +1564,346 @@ document.getElementById('scroll-right').addEventListener('click', () => {
     
     </section>
 
+<section class="suggestions py-5" style="background-color:white;">
+  <div class="container">
+    <h3 class="text-dark mb-4" style="font-weight:600;">Your Suggestions</h3>
 
+    <div class="position-relative">
+
+      <!-- Left Arrow -->
+      <button class="scroll-btn left">&larr;</button>
+
+      <!-- Carousel container -->
+      <div class="d-flex overflow-hidden gap-3 scroll-container">
+
+        <!-- 1–5: Existing products -->
+        <a href="{{ url_for('product_detail', product_id=131) }}" class="product-link">
+          <div class="product-card">
+            <img src="{{ url_for('static', filename='images/product/dairy/dairy5.jpg') }}">
+             </a>
+            <div class="product-name">Happy Cow Cheese Portion Regular 120g</div>
+            <div class="product-price">Rs.840.00</div>
+          </div>
+        
+
+        <a href="{{ url_for('product_detail', product_id=132) }}" class="product-link">
+          <div class="product-card">
+            <img src="{{ url_for('static', filename='images/product/dairy/dairy6.jpg') }}">
+             </a>
+            
+            <div class="product-name">Kotmale Yoghurt Multi Pack 6S 480g</div>
+            <div class="product-price">Rs.480.00</div>
+          </div>
+        
+
+        <a href="{{ url_for('product_detail', product_id=133) }}" class="product-link">
+          <div class="product-card">
+            <img src="{{ url_for('static', filename='images/product/dairy/dairy7.jpg') }}">
+             </a>
+            <div class="product-name">Kandawatta Curd Clay Pot 900ml</div>
+            <div class="product-price">Rs.770.00</div>
+          </div>
+        
+
+        <a href="{{ url_for('product_detail', product_id=134) }}" class="product-link">
+          <div class="product-card">
+            <img src="{{ url_for('static', filename='images/product/dairy/dairy8.jpg') }}">
+             </a>
+            <div class="product-name">Nestle Milkmaid 190g</div>
+            <div class="product-price">Rs.490.00</div>
+          </div>
+        
+
+        <a href="{{ url_for('product_detail', product_id=135) }}" class="product-link">
+          <div class="product-card">
+            <img src="{{ url_for('static', filename='images/product/dairy/dairy9.jpg') }}">
+             </a>
+            <div class="product-name">Daily Flavored Milk Uht Chocolate Milk Tetra 180Ml</div>
+            
+            <div class="product-price">Rs.130.00</div>
+          </div>
+        
+
+        <!-- 6–15: Grocery / Frozen products -->
+        <a href="{{ url_for('product_detail', product_id=53) }}" class="product-link">
+          <div class="product-card">
+            <img src="{{ url_for('static', filename='images/product/Grocery/chiliPowder.jpg') }}">
+             </a>
+            <div class="product-name">Chili Powder 250g</div>
+            <div class="product-price">Rs.250.00</div>
+          </div>
+        
+
+        <a href="{{ url_for('product_detail', product_id=54) }}" class="product-link">
+          <div class="product-card">
+            <img src="{{ url_for('static', filename='images/product/Grocery/turmeric.jpg') }}">
+             </a>
+            <div class="product-name">Turmeric Powder 250g</div>
+            <div class="product-price">Rs.500.00</div>
+          </div>
+        
+
+        <a href="{{ url_for('product_detail', product_id=55) }}" class="product-link">
+          <div class="product-card">
+            <img src="{{ url_for('static', filename='images/product/Grocery/coconutmilk.jpg') }}">
+             </a>
+            <div class="product-name">Coconut Milk 400ml</div>
+            <div class="product-price">Rs.350.00</div>
+          </div>
+        
+
+        <a href="{{ url_for('product_detail', product_id=56) }}" class="product-link">
+          <div class="product-card">
+            <img src="{{ url_for('static', filename='images/product/Grocery/tomato.jpg') }}">
+             </a>
+            <div class="product-name">Tomato Paste 200g</div>
+            <div class="product-price">Rs.300.00</div>
+          </div>
+        
+
+        <a href="{{ url_for('product_detail', product_id=57) }}" class="product-link">
+          <div class="product-card">
+            <img src="{{ url_for('static', filename='images/product/Grocery/SoyaSauce.jpg') }}">
+             </a>
+            <div class="product-name">Soya Sauce 250ml</div>
+            <div class="product-price">Rs.400.00</div>
+          </div>
+        
+
+        <a href="{{ url_for('product_detail', product_id=29) }}" class="product-link">
+          <div class="product-card">
+            <img src="{{ url_for('static', filename='images/product/frozen/frozen4.jpg') }}">
+             </a>
+            <div class="product-name">Frozen Broccoli 500g</div>
+            <div class="product-price">Rs.400.00</div>
+          </div>
+        
+
+        <a href="{{ url_for('product_detail', product_id=30) }}" class="product-link">
+          <div class="product-card">
+            <img src="{{ url_for('static', filename='images/product/frozen/frozen5.jpg') }}">
+             </a>
+            <div class="product-name">Farm Fresh French Fries 500g</div>
+            <div class="product-price">Rs.1,310.00</div>
+          </div>
+        
+
+        <a href="{{ url_for('product_detail', product_id=31) }}" class="product-link">
+          <div class="product-card">
+            <img src="{{ url_for('static', filename='images/product/frozen/frozen6.jpg') }}">
+             </a>
+            <div class="product-name">Bairaha Chicken Cheese Nuggets 240g</div>
+            <div class="product-price">Rs.800.00</div>
+          </div>
+        
+
+        <a href="{{ url_for('product_detail', product_id=32) }}" class="product-link">
+          <div class="product-card">
+            <img src="{{ url_for('static', filename='images/product/frozen/frozen7.jpg') }}">
+            <div class="product-name">Handallo - Cleaned & Frozen 500G</div>
+             </a>
+            <div class="product-price">Rs.1,700.00</div>
+          </div>
+        
+
+        <a href="{{ url_for('product_detail', product_id=33) }}" class="product-link">
+          <div class="product-card">
+            <img src="{{ url_for('static', filename='images/product/frozen/frozen8.jpg') }}">
+             </a>
+            <div class="product-name">Frozen Shrimp 500g</div>
+            <div class="product-price">Rs.1,200.00</div>
+          </div>
+       
+
+      </div>
+
+      <!-- Right Arrow -->
+      <button class="scroll-btn right">&rarr;</button>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .scroll-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 15px;
+    padding: 15px;
+    background-color: white; /* green background */
+    border-radius: 10px;
+  }
+
+  .scroll-container::-webkit-scrollbar {
+    height: 8px;
+  }
+  .scroll-container::-webkit-scrollbar-thumb {
+    background-color: white;
+    border-radius: 4px;
+  }
+
+  .product-card {
+    min-width: 200px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .product-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+  .product-name {
+    font-weight: 500;
+    margin-top: 5px;
+  }
+  .product-price {
+    font-weight: bold;
+    margin-top: 2px;
+  }
+
+  .scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 30px;
+    padding: 10px 15px;
+    border: none;
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 100;
+  }
+  .scroll-btn.left { left: 0; }
+  .scroll-btn.right { right: 0; }
+  .scroll-btn:hover { background-color: rgba(0,0,0,0.8); }
+  /* Remove underline from product links */
+.tesco-product-link {
+  text-decoration: none;
+  color: inherit; /* keeps text color same as product card */
+}
+
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const container = document.querySelector('.scroll-container');
+    const leftBtn = document.querySelector('.scroll-btn.left');
+    const rightBtn = document.querySelector('.scroll-btn.right');
+
+    leftBtn.addEventListener('click', () => container.scrollBy({ left: -220, behavior: 'smooth' }));
+    rightBtn.addEventListener('click', () => container.scrollBy({ left: 220, behavior: 'smooth' }));
+  });
+</script>
+
+<!-- START: TescoFoodCity Super Sale -->
+<section class="tesco-super-sale">
+  <div class="tesco-container">
+
+    <!-- Header -->
+    <div class="tesco-sale-header">
+      <div class="tesco-sale-badge">Super Sale <span>discount up to 70%</span></div>
+      <h2>Best Discount <span>Supermarket Products</span></h2>
+      <p>Grab amazing deals on your favorite supermarket products at TescoFoodCity!</p>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="tesco-product-grid">
+      <a href="{{ url_for('product_detail', product_id=148) }}" class="tesco-product-link">
+        <div class="tesco-product-card">
+          <div class="tesco-discount-badge"></div>
+          <img src="{{ url_for('static', filename='images/product/deal/deal1.jpeg') }}">
+          <div class="tesco-product-name">Coca Cola 1.25L</div>
+          <div class="tesco-product-price">Rs.300.00</div>
+          <div class="tesco-product-price-old">Rs.320.00</div>
+        </div>
+      </a>
+
+      <a href="{{ url_for('product_detail', product_id=149) }}" class="tesco-product-link">
+        <div class="tesco-product-card">
+          <div class="tesco-discount-badge"></div>
+          <img src="{{ url_for('static', filename='images/product/deal/deal2.jpg') }}">
+          <div class="tesco-product-name">Ponds Super Light Gel 25g</div>
+          <div class="tesco-product-price">Rs.380.50</div>
+          <div class="tesco-product-price-old">Rs.470.00</div>
+        </div>
+      </a>
+
+      <a href="{{ url_for('product_detail', product_id=150) }}" class="tesco-product-link">
+        <div class="tesco-product-card">
+          <div class="tesco-discount-badge"></div>
+          <img src="{{ url_for('static', filename='images/product/deal/deal3.jpg') }}">
+          <div class="tesco-product-name">Pepsi Pet Bottle 1L</div>
+          <div class="tesco-product-price">Rs.300.00</div>
+          <div class="tesco-product-price-old">Rs.310.00</div>
+        </div>
+      </a>
+
+      <a href="{{ url_for('product_detail', product_id=151) }}" class="tesco-product-link">
+        <div class="tesco-product-card">
+          <div class="tesco-discount-badge"></div>
+          <img src="{{ url_for('static', filename='images/product/deal/deal4.jpg') }}">
+          <div class="tesco-product-name">Flora Facial Tissue Box 2Ply 200S</div>
+          <div class="tesco-product-price">Rs.425.00</div>
+          <div class="tesco-product-price-old">Rs.575.00</div>
+        </div>
+      </a>
+
+      <a href="{{ url_for('product_detail', product_id=152) }}" class="tesco-product-link">
+        <div class="tesco-product-card">
+          <div class="tesco-discount-badge"></div>
+          <img src="{{ url_for('static', filename='images/product/deal/deal5.jpg') }}">
+          <div class="tesco-product-name">Sprite Pet Bottle 1.5L</div>
+          <div class="tesco-product-price">Rs.410.00</div>
+          <div class="tesco-product-price-old">Rs.420.00</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <div class="tesco-sale-footer">
+      <div class="tesco-contact">📞 0763659784</div>
+    </div>
+  </div>
+</section>
+
+<style>
+/* Scoped Styles for Tesco Super Sale */
+.tesco-super-sale { background:#28a745; color:#fff; padding:40px 15px; font-family: Arial, sans-serif; }
+.tesco-container { max-width:1200px; margin:auto; }
+.tesco-sale-header { text-align:center; margin-bottom:30px; }
+.tesco-sale-header h2 { font-size:2em; margin:10px 0; }
+.tesco-sale-header h2 span { color:#fff200; }
+.tesco-sale-header p { font-size:1em; color:#fff; margin-bottom:30px; }
+
+.tesco-sale-badge { background:#fff200; color:#e60000; font-weight:bold; display:inline-block; padding:8px 15px; border-radius:10px; font-size:1em; margin-bottom:15px; }
+.tesco-sale-badge span { display:block; font-size:0.8em; color:#e60000; }
+
+.tesco-product-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:20px; }
+
+.tesco-product-card { background:#fff; color:#000; border-radius:10px; overflow:hidden; position:relative; text-align:center; padding:10px; transition: transform 0.3s, box-shadow 0.3s; }
+.tesco-product-card:hover { transform: translateY(-5px); box-shadow:0 10px 20px rgba(0,0,0,0.25); }
+.tesco-product-card img { width:100%; height:180px; object-fit:cover; margin-bottom:10px; }
+.tesco-product-name { font-weight:600; margin-bottom:5px; min-height:40px; }
+.tesco-product-price { font-weight:bold; color:#e60000; }
+.tesco-product-price-old { text-decoration: line-through; color:#888; font-size:0.85em; }
+
+.tesco-discount-badge { position:absolute; top:10px; left:10px; background:#e60000; color:#fff; font-weight:bold; font-size:0.8em; padding:4px 8px; border-radius:5px; }
+
+.tesco-sale-footer { text-align:center; margin-top:20px; font-weight:bold; font-size:1.1em; }
+</style>
+
+<script>
+// Scoped JS for Tesco Super Sale
+document.querySelectorAll('.tesco-product-card').forEach(card => {
+  const price = parseFloat(card.querySelector('.tesco-product-price').textContent.replace('Rs.',''));
+  const original = parseFloat(card.querySelector('.tesco-product-price-old').textContent.replace('Rs.',''));
+  const discount = Math.round(((original - price) / original) * 100);
+  card.querySelector('.tesco-discount-badge').textContent = discount + '% OFF';
+});
+</script>
+<!-- END: TescoFoodCity Super Sale -->
 
     <!-- Ads Carousel -->
     <section class="ads-carousel">
