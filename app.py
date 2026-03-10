@@ -9,9 +9,7 @@ import secrets
 import requests
 from datetime import datetime, timedelta
 from flask import Flask, jsonify, redirect, url_for, session, request, render_template, flash
-
 import mysql.connector
-
 from sendgrid.helpers.mail import Mail
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, session, render_template, request, jsonify, redirect, url_for
@@ -22,13 +20,9 @@ import random
 from email.message import EmailMessage
 from werkzeug.security import generate_password_hash
 from flask import request, redirect, url_for, flash, session, render_template
-
-
 import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-
 from flask_dance.contrib.google import make_google_blueprint, google
-
 # -----------------------------
 # MySQL Connection
 # -----------------------------
@@ -115,6 +109,7 @@ def google_login_success():
 
     return redirect(url_for("customer_dashboard"))
 
+
 # -----------------------------
 # Database connection
 # -----------------------------
@@ -172,8 +167,7 @@ def redirect_role_dashboard(role):
     else:
         return redirect(url_for("customer_dashboard"))
 
-# -----------------------------
-# Routes: Home / Products / Search
+
 
 
 
@@ -328,31 +322,44 @@ def cart_page():
 import smtplib
 from email.message import EmailMessage
 
-def send_verification_email(to_email, code):
+def send_verification_email1(to_email, code):
     sender_email = "s23010156@ousl.lk"
     app_password = "njjfgvajdiiojlja"  # 16-character app password
 
     html_content = f"""
-    <html>
-    <body style="font-family:Arial;background:#f5f5f5;padding:20px;">
-    <div style="max-width:500px;margin:auto;background:white;padding:30px;border-radius:10px;text-align:center;">
-        <!-- Logo -->
-        <div style="text-align:center;margin-bottom:20px;">
-            <img src="https://yourdomain.com/static/images/logo.jpg" alt="Tesco Food City" width="120">
-        </div>
-        <h2 style="color:#2e7d32;">Verify Your Email</h2>
-        <p>Hello,</p>
-        <p>Thank you for registering with <b>Tesco Food City</b>.</p>
-        <p>Your verification code is:</p>
-        <h1 style="letter-spacing:6px;color:#2e7d32;">{code}</h1>
-        <p>This code will expire in <b>2 minutes</b>.</p>
-        <p>If you did not request this, please ignore this email.</p>
-        <hr>
-        <p style="font-size:12px;color:gray;">Tesco Food City<br>Customer Support Team</p>
-    </div>
-    </body>
-    </html>
-    """
+<html>
+<body style="font-family:Arial;background:#f5f5f5;padding:20px;">
+
+<div style="max-width:520px;margin:auto;background:white;padding:30px;border-radius:10px;text-align:center;">
+
+<h2 style="color:#2e7d32;">Order Confirmation</h2>
+
+<p>Hello Customer,</p>
+
+<p>Your order has been successfully placed at <b>Tesco Food City</b>.</p>
+
+
+
+<p>Your delivery verification code:</p>
+
+<h1 style="letter-spacing:6px;color:#2e7d32;">{code}</h1>
+
+<p>Show this code when receiving your order.</p>
+
+<hr>
+
+<p style="font-size:12px;color:gray;">
+Tesco Food City<br>
+Customer Support Team<br>
+📞 0763659784
+</p>
+
+</div>
+
+</body>
+</html>
+"""
+
 
     msg = EmailMessage()
     msg.set_content(f"Your verification code is: {code}")  # fallback plain text
@@ -423,7 +430,7 @@ def checkout():
 
 
 
-        success = send_verification_email(email, verification_code)
+        success = send_verification_email1(email, verification_code)
         if success:
             flash("Verification code sent to your email. Please enter it to confirm your order.", "info")
             return redirect(url_for('verify_order'))
